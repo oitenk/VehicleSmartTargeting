@@ -1,0 +1,64 @@
+# Vehicle Smart Targeting
+# Turns the mounted machine guns' dumb-fire round into a smart bullet.
+# Target acquisition and steering are handled in r6/scripts/VehicleSmartTargeting.
+
+# The stock round is edited in place so every vehicle using it is covered, while
+# modded vehicles that swap in their own projectile keep it.
+Attacks.VehicleTurretProjectile:
+  projectileTemplateName: smart_bullet
+  # Smart bullets are flown by script; speed comes from the stats below.
+  velocity: 0
+
+# Velocity is in m/s and has to outrun the car that fired it. Miss chance is not
+# set here: the script rolls it from the mod's own setting.
+Items.VST_Vehicle_Power_Weapon_SmartGun_Stats:
+  $type: StatModifierGroup
+  statModifiers:
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunPlayerProjectileVelocity
+      modifierType: Additive
+      value: 150
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunNPCProjectileVelocity
+      modifierType: Additive
+      value: 150
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunProjectileVelocityVariance
+      modifierType: Additive
+      value: 0.05
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunHitProbability
+      modifierType: Additive
+      value: 0.9
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunMissDelay
+      modifierType: Additive
+      value: 0.05
+    - $type: ConstantStatModifier
+      statType: BaseStats.SmartGunMissRadius
+      modifierType: Additive
+      value: 6.5
+
+# Lock-on behaviour for the mounted guns: the missile launcher's preset, tuned.
+# The missile launcher itself keeps its stock preset.
+AimAssist.VST_Common_MountedGuns:
+  $base: AimAssist.AimAssistCommon_DriverCombatMissiles
+  # Seconds a target must sit in the reticle before it locks (missiles: 0.5).
+  targetAcquisitionDelayTime: 0.1
+  # How strongly the current lock is preferred over a new candidate (missiles: 15).
+  softLockTargetWeight: 60
+  # How far off-centre the target may drift before the lock breaks; yaw was 45.
+  softLockBrakeAngle: { roll: 0, pitch: 180, yaw: 90 }
+  # Seconds an out-of-sight target is kept (missiles: 1).
+  targetLostTimeOut: 2.5
+
+AimAssist.VST_ConfigPreset_MountedGuns:
+  $base: AimAssist.AimAssistConfigPreset_DriverCombatMissiles
+  commonParams: AimAssist.VST_Common_MountedGuns
+
+# Every stock and modded mounted machine gun derives from this record.
+Items.Base_Vehicle_Power_Weapon:
+  # The missile launcher crosshair carries the lock-on diamond; the gun one has none.
+  crosshair: Crosshairs.Driver_Combat_Missile_Launcher
+  statModifierGroups:
+    - !append-once Items.VST_Vehicle_Power_Weapon_SmartGun_Stats

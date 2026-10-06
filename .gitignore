@@ -1,0 +1,5 @@
+# Release zips are built from the source folders and attached to releases instead.
+dist/
+
+# Garage add-on: kept locally only until its permissions are settled.
+garage-addon/
