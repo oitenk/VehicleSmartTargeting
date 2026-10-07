@@ -20,8 +20,17 @@ While the mounted guns are out:
 
 These are the game's own mounted-weapon keys, so they follow your key bindings.
 
-## Requirements
+## Packages
 
+The mod comes in two parts. Each is laid out from the game root, so its folders can be copied into the game directory or zipped for a mod manager.
+
+### Core
+
+The `r6` folder.
+
+On its own, every armed vehicle has both modes straight away.
+
+Requires:
 - [RED4ext](https://github.com/WopsS/RED4ext)
 - [redscript](https://github.com/jac3km4/redscript)
 - [TweakXL](https://github.com/psiberx/cp2077-tweak-xl)
@@ -29,11 +38,28 @@ These are the game's own mounted-weapon keys, so they follow your key bindings.
 Optional:
 - [Mod Settings](https://github.com/jackhumbert/mod_settings) - adds an in-game options page (see below). Without it the defaults apply.
 
-## Installation
+### Garage add-on
 
-Copy the `r6` folder into the game directory, or install the release zip with a mod manager. It is laid out from the game root.
+The contents of the `garage-addon` folder.
 
-Every armed vehicle has both modes straight away.
+Installing the add-on turns the two modes into per-vehicle upgrades bought through [Garage](https://www.nexusmods.com/cyberpunk2077/mods/30297) by CyanideX. A "Targeting" service appears in the garage hub for owned vehicles with mounted guns.
+
+| Upgrade | Price | Refit fee |
+|---|---|---|
+| Smart Lock | 50,000 | 5,000 |
+| Gimbal Aim | 35,000 | 3,500 |
+
+Removing an upgrade is free. The refit fee applies when putting back an upgrade that vehicle has already bought. A vehicle with neither upgrade fires straight, with the stock gun crosshair. What you pay goes into that garage's cash pool.
+
+Requires:
+- The core package
+- [Garage](https://www.nexusmods.com/cyberpunk2077/mods/30297) (VehicleCore and GarageCore)
+- [Codeware](https://github.com/psiberx/cp2077-codeware)
+- [Cyber Engine Tweaks](https://github.com/maximegmd/CyberEngineTweaks)
+
+The add-on will not compile without Garage installed. Removing the add-on makes both modes free again; purchases stay in the save.
+
+Payment has been tested on GarageCore 1.0.4. The add-on is written to use Garage's `GC.Payment` helper where it exists (GarageCore 1.1.0 and later); that path has not been tested yet.
 
 ## Options
 
@@ -54,6 +80,13 @@ With Mod Settings installed, under **Vehicle Smart Targeting**:
 - The gun models do not move in Gimbal Aim; only the rounds leave at an angle.
 - Smart Lock only guides rounds at targets within the guidance arc in front of the vehicle. Outside it, rounds fire straight.
 - Built and tested on game version 2.3x with TweakXL 1.11.4 and Mod Settings 0.2.21.
+
+## Credits
+
+- **CyanideX** for [Garage](https://www.nexusmods.com/cyberpunk2077/mods/30297) and its service API and wiki, which the add-on is built on.
+- **SDH0** for the [Nitrous Addon (Garage)](https://www.nexusmods.com/cyberpunk2077/mods/34377), the reference third-party Garage service, and for permission to publish this add-on.
+
+The code in this repository was written with Claude, an AI assistant.
 
 ## License
 
