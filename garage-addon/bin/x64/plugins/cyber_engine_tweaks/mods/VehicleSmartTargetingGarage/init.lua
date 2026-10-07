@@ -19,8 +19,8 @@ registerForEvent("onInit", function()
         return State and State.currentGarageLocation and State.currentGarageLocation.filename
     end
 
-    -- Newer Garage releases: GC.Payment takes the eddies, pays the garage's cash
-    -- pool, updates the economy HUD and fires the transaction event in one call.
+    -- Where GarageCore provides GC.Payment, it takes the eddies, pays the garage's
+    -- cash pool, updates the economy HUD and fires the transaction event in one call.
     local Payment = GC.Payment
     if type(Payment) == "table" and type(Payment.charge) == "function" then
         local lastReceipt = nil
@@ -46,8 +46,8 @@ registerForEvent("onInit", function()
         return
     end
 
-    -- Older releases have no GC.Payment. Let the Redscript stub take the eddies,
-    -- then pay them into the garage's cash pool through the SDK's economy table.
+    -- Without GC.Payment, let the Redscript stub take the eddies, then pay them
+    -- into the garage's cash pool through the SDK's economy table.
     Override(BRIDGE, "Charge;Int32", function(amount, wrapped)
         if not wrapped(amount) then return false end
         local garage = currentGarage()

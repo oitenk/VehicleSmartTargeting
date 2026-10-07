@@ -61,8 +61,6 @@ Requires:
 
 The add-on will not compile without Garage installed. Removing the add-on makes both modes free again; purchases stay in the save.
 
-Payment has been tested on GarageCore 1.0.4. The add-on is written to use Garage's `GC.Payment` helper where it exists (GarageCore 1.1.0 and later); that path has not been tested yet.
-
 ## Options
 
 With Mod Settings installed, under **Vehicle Smart Targeting**:
