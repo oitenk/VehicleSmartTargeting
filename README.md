@@ -5,6 +5,8 @@ A Cyberpunk 2077 mod that gives the mounted machine guns on weaponized vehicles 
 - **Smart Lock** - the guns lock on to hostile targets the way the missile launcher does, and their rounds home on the locked target.
 - **Gimbal Aim** - no lock. Rounds leave the guns aimed at whatever is under the crosshair, within an arc in front of the car.
 
+**[Watch the demo video](https://youtu.be/DfUjUl_xXn0)**
+
 Both modes use the missile launcher's HUD as the crosshair. They apply to every vehicle that uses the stock mounted machine guns, vanilla or modded. Modded vehicles that replace the gun projectile with their own keep it.
 
 ## Controls
