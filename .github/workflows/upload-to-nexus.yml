@@ -29,8 +29,11 @@ on:
         description: Also set the mod page's version number to this
         type: boolean
         default: true
+      # Nexus can only archive through its API, and archived versions cannot be
+      # downloaded. To keep the previous version available, set it to "Old files"
+      # on the Nexus site afterwards.
       archive_previous:
-        description: Move this file's previous version to Old files
+        description: Archive this file's previous version (hides it from downloads; this is not "Old files")
         type: boolean
         default: true
 
