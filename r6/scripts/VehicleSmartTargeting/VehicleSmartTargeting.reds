@@ -543,17 +543,52 @@ public func ApplyAimAssistSettings(config: AimAssistSettingConfig) -> Void {
 
 // The lock-on diamond plays a long "locking" animation unless a perk shortens it.
 // The guns guide as soon as the lock exists, so always show the short one for them.
+//
+// The game passes the locked target to the crosshair through a blackboard value, and
+// in some setups that value cannot be read back even though the lock exists.
+// So for the guns the diamond takes its target straight from the targeting system,
+// both when the game signals a change and every frame while the crosshair is drawn.
+@addMethod(gameuiDriverCombatMountedMissileLauncherCrosshairGameController)
+private func VST_GunsAreOut() -> Bool {
+  return IsDefined(this.m_playerPuppet)
+    && this.m_psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.DriverCombatWeaponType) == EnumInt(gamedataItemType.Wea_VehiclePowerWeapon);
+}
+
+@addMethod(gameuiDriverCombatMountedMissileLauncherCrosshairGameController)
+private func VST_ShowLockOn(target: wref<IPlacedComponent>) -> Void {
+  let options: inkAnimOptions;
+  if IsDefined(this.m_lockingAnimationProxy) && this.m_lockingAnimationProxy.IsValid() {
+    this.m_lockingAnimationProxy.GotoStartAndStop();
+  }
+  this.m_currentTarget = target;
+  if IsDefined(target) {
+    this.m_lockingAnimationProxy = this.PlayLibraryAnimation(n"locking_short", options);
+    inkWidgetRef.SetVisible(this.m_lockingAnimationWidget, true);
+  } else {
+    inkWidgetRef.SetVisible(this.m_lockingAnimationWidget, false);
+  }
+}
+
 @wrapMethod(gameuiDriverCombatMountedMissileLauncherCrosshairGameController)
 protected cb func OnPSMTrackedTargetChanged(value: Variant) -> Bool {
-  let options: inkAnimOptions;
   let result: Bool = wrappedMethod(value);
-  if IsDefined(this.m_currentTarget) && this.m_psmBlackboard.GetInt(GetAllBlackboardDefs().PlayerStateMachine.DriverCombatWeaponType) == EnumInt(gamedataItemType.Wea_VehiclePowerWeapon) {
-    if IsDefined(this.m_lockingAnimationProxy) && this.m_lockingAnimationProxy.IsValid() {
-      this.m_lockingAnimationProxy.GotoStartAndStop();
-    }
-    this.m_lockingAnimationProxy = this.PlayLibraryAnimation(n"locking_short", options);
+  if this.VST_GunsAreOut() {
+    this.VST_ShowLockOn(GameInstance.GetTargetingSystem(this.m_playerPuppet.GetGame()).GetTrackedTargetComponent(this.m_playerPuppet));
   }
   return result;
+}
+
+@wrapMethod(gameuiDriverCombatMountedMissileLauncherCrosshairGameController)
+protected func UpdateLockingAnimationWidgetTranslation(uiScreenResolution: Vector2) -> Void {
+  let tracked: wref<IPlacedComponent>;
+  if this.VST_GunsAreOut() {
+    tracked = GameInstance.GetTargetingSystem(this.m_playerPuppet.GetGame()).GetTrackedTargetComponent(this.m_playerPuppet);
+    if NotEquals(IsDefined(tracked), IsDefined(this.m_currentTarget)) || (IsDefined(tracked) && tracked != this.m_currentTarget) {
+      VSTUtils.Log(this.m_playerPuppet, "crosshair: lock state corrected, locked=" + BoolToString(IsDefined(tracked)));
+      this.VST_ShowLockOn(tracked);
+    }
+  }
+  wrappedMethod(uiScreenResolution);
 }
 
 @wrapMethod(sampleSmartBullet)
@@ -806,10 +841,13 @@ protected cb func OnShootTarget(eventData: ref<gameprojectileShootTargetEvent>) 
 @wrapMethod(DriverCombatEvents)
 protected cb func OnDriverCombatTargetChange(value: Variant) -> Bool {
   let result: Bool = wrappedMethod(value);
+  let tracked: wref<TargetingComponent>;
   if IsDefined(this.m_targetComponent) {
     VSTUtils.Log(this.m_executionOwner, "lock acquired: " + NameToString(this.m_targetComponent.GetEntity().GetClassName()));
   } else {
-    VSTUtils.Log(this.m_executionOwner, "lock lost");
+    // Says whether the game's signal was really "no target" or arrived empty while a lock exists.
+    tracked = GameInstance.GetTargetingSystem(this.m_executionOwner.GetGame()).GetTrackedTargetComponent(this.m_executionOwner);
+    VSTUtils.Log(this.m_executionOwner, "lock signal empty: valueType=" + NameToString(VariantTypeName(value)) + " lockExists=" + BoolToString(IsDefined(tracked)));
   }
   return result;
 }
