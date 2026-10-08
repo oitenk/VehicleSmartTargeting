@@ -30,12 +30,12 @@ on:
         type: boolean
         default: true
       # Nexus can only archive through its API, and archived versions cannot be
-      # downloaded. To keep the previous version available, set it to "Old files"
+      # downloaded. Left off, the previous version stays up; move it to "Old files"
       # on the Nexus site afterwards.
       archive_previous:
         description: Archive this file's previous version (hides it from downloads; this is not "Old files")
         type: boolean
-        default: true
+        default: false
 
 permissions:
   contents: read
@@ -71,6 +71,7 @@ jobs:
             display_name="Vehicle Smart Targeting"
             description="Smart Lock and Gimbal Aim for mounted vehicle machine guns."
             category="main"
+            primary="true"
           else
             file_id="$ADDON_FILE_ID"
             id_name="NEXUSMODS_ADDON_FILE_ID"
@@ -78,6 +79,7 @@ jobs:
             display_name="Vehicle Smart Targeting - Garage Add-on"
             description="Optional. Sells both modes as per-vehicle upgrades through Garage. Requires the core file and Garage."
             category="optional"
+            primary="false"
           fi
           if [ -z "$file_id" ]; then
             echo "::error::Repository variable $id_name is not set"
@@ -89,6 +91,7 @@ jobs:
             echo "display_name=$display_name"
             echo "description=$description"
             echo "category=$category"
+            echo "primary=$primary"
           } >> "$GITHUB_OUTPUT"
 
       # The notes players see come from CHANGELOG.md, not from commit messages.
@@ -139,6 +142,7 @@ jobs:
           description: ${{ steps.package.outputs.description }}
           version: ${{ inputs.version }}
           category: ${{ steps.package.outputs.category }}
+          primary_mod_manager_download: ${{ steps.package.outputs.primary }}
           archive_existing_version: ${{ inputs.archive_previous }}
           update_mod_version: ${{ inputs.update_mod_version }}
           changelog: ${{ steps.changelog.outputs.notes }}
