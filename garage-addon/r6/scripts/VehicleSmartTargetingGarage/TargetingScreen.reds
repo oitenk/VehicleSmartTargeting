@@ -13,9 +13,9 @@ import Codeware.UI.*
 public abstract class TargetingCatalog {
   public static func Label(feature: VSTFeature) -> String {
     if Equals(feature, VSTFeature.SmartLock) {
-      return "SMART LOCK";
+      return UTF8StrUpper(TargetingText("VehicleSmartTargetingGarage-SmartLock"));
     }
-    return "GIMBAL AIM";
+    return UTF8StrUpper(TargetingText("VehicleSmartTargetingGarage-GimbalAim"));
   }
 
   public static func Price(feature: VSTFeature) -> Int32 {
@@ -69,7 +69,7 @@ public class TargetingScreen extends GarageScreen {
     root.SetVisible(false);
 
     this.CreateBackButton(root);
-    this.CreateTitle(root, "TARGETING", 60.0);
+    this.CreateTitle(root, UTF8StrUpper(TargetingText("VehicleSmartTargetingGarage-Title")), 60.0);
 
     let column = new inkVerticalPanel();
     column.SetName(n"vstColumn");
@@ -81,9 +81,9 @@ public class TargetingScreen extends GarageScreen {
     this.m_vehicleText = this.AddText(column, n"vstVehicle", 48, n"Bold", GarageColors.AccentBlue());
     this.m_balanceText = this.AddText(column, n"vstBalance", 30, n"Regular", GarageColors.AccentBlue());
     this.m_smartText = this.AddText(column, n"vstSmartText", 36, n"Regular", new HDRColor(1.0, 0.81, 0.06, 1.0));
-    this.m_smartBtn = this.CreateStandardButton(n"vstSmartBtn", "INSTALL", 300.0, this.AddButtonHolder(column, n"vstSmartHolder"), n"OnSmartClick");
+    this.m_smartBtn = this.CreateStandardButton(n"vstSmartBtn", this.ButtonText("Install"), 300.0, this.AddButtonHolder(column, n"vstSmartHolder"), n"OnSmartClick");
     this.m_gimbalText = this.AddText(column, n"vstGimbalText", 36, n"Regular", new HDRColor(1.0, 0.81, 0.06, 1.0));
-    this.m_gimbalBtn = this.CreateStandardButton(n"vstGimbalBtn", "INSTALL", 300.0, this.AddButtonHolder(column, n"vstGimbalHolder"), n"OnGimbalClick");
+    this.m_gimbalBtn = this.CreateStandardButton(n"vstGimbalBtn", this.ButtonText("Install"), 300.0, this.AddButtonHolder(column, n"vstGimbalHolder"), n"OnGimbalClick");
 
     this.m_root = root;
     this.SetRootWidget(root);
@@ -109,6 +109,16 @@ public class TargetingScreen extends GarageScreen {
     holder.SetHAlign(inkEHorizontalAlign.Center);
     holder.Reparent(parent);
     return holder;
+  }
+
+  private func ButtonText(name: String) -> String {
+    return UTF8StrUpper(TargetingText("VehicleSmartTargetingGarage-" + name));
+  }
+
+  // One of the upgrade lines, with the upgrade's name and a price filled in.
+  private func LineText(name: String, label: String, price: Int32) -> String {
+    let text = TargetingText("VehicleSmartTargetingGarage-" + name);
+    return StrReplace(StrReplace(text, "{NAME}", label), "{PRICE}", FormatPrice(price));
   }
 
   public func Show() -> Void {
@@ -153,9 +163,9 @@ public class TargetingScreen extends GarageScreen {
     if IsDefined(vehicle) && IsDefined(settings) {
       this.m_vehicleText.SetText(settings.sellVehicleDisplayName);
     } else {
-      this.m_vehicleText.SetText("No mounted guns to fit");
+      this.m_vehicleText.SetText(TargetingText("VehicleSmartTargetingGarage-NoGuns"));
     }
-    this.m_balanceText.SetText("Balance: " + FormatPrice(balance));
+    this.m_balanceText.SetText(StrReplace(TargetingText("VehicleSmartTargetingGarage-Balance"), "{AMOUNT}", FormatPrice(balance)));
     this.PopulateRow(vehicle, VSTFeature.SmartLock, balance, this.m_smartText, this.m_smartBtn);
     this.PopulateRow(vehicle, VSTFeature.GimbalAim, balance, this.m_gimbalText, this.m_gimbalBtn);
   }
@@ -167,22 +177,22 @@ public class TargetingScreen extends GarageScreen {
     let cost: Int32;
     let btnRoot: wref<inkWidget>;
     if !IsDefined(vehicle) {
-      line.SetText(label + " - " + FormatPrice(TargetingCatalog.Price(feature)) + " eddies");
-      btn.SetText("INSTALL");
+      line.SetText(this.LineText("ForSale", label, TargetingCatalog.Price(feature)));
+      btn.SetText(this.ButtonText("Install"));
     } else {
       installs = VSTInstallSystem.Get(vehicle.GetGame());
       cost = this.CostOf(vehicle, feature);
       if installs.IsInstalled(vehicle.GetRecordID(), feature) {
-        line.SetText(label + " - installed");
-        btn.SetText("REMOVE");
+        line.SetText(this.LineText("Installed", label, 0));
+        btn.SetText(this.ButtonText("Remove"));
         usable = true;
       } else {
         if installs.IsOwned(vehicle.GetRecordID(), feature) {
-          line.SetText(label + " - refit for " + FormatPrice(cost) + " eddies");
-          btn.SetText("REFIT");
+          line.SetText(this.LineText("RefitFor", label, cost));
+          btn.SetText(this.ButtonText("Refit"));
         } else {
-          line.SetText(label + " - " + FormatPrice(cost) + " eddies");
-          btn.SetText("INSTALL");
+          line.SetText(this.LineText("ForSale", label, cost));
+          btn.SetText(this.ButtonText("Install"));
         }
         usable = balance >= cost;
       }
@@ -209,7 +219,7 @@ public class TargetingScreen extends GarageScreen {
       cost = this.CostOf(vehicle, feature);
       if LuaBridge.GetPlayerMoney() >= cost && TargetingBridge.Charge(cost) {
         installs.Install(vehicle.GetRecordID(), feature);
-        TargetingBridge.Complete(TargetingCatalog.Label(feature) + " fitted");
+        TargetingBridge.Complete(StrReplace(TargetingText("VehicleSmartTargetingGarage-Fitted"), "{NAME}", TargetingCatalog.Label(feature)));
       }
     }
     // Stay on the screen so the other upgrade can be bought in the same visit.

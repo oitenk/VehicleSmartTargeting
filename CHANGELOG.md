@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2
+
+- The mod's on-screen text can now be translated. It goes through Codeware's localization system, with English as the fallback for any language that has no translation yet.
+- Core: the mode messages ("Mounted guns: Smart Lock" and so on) are translatable when Codeware is installed. Codeware stays optional for the core file; without it the messages are in English as before.
+- Garage add-on: the Targeting service button, the screen, its buttons and the purchase notice are all translatable.
+
+Nothing changes in English, and no settings or saves are affected. The Mod Settings page stays in English. See "Translating" in the README if you would like to add a language.
+
 ## 1.1
 
 - Fixed the lock-on diamond not appearing for the mounted guns in some load orders. Smart Lock itself was unaffected: targets were still locked and rounds still homed, only the on-screen diamond was missing.

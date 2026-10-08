@@ -39,6 +39,7 @@ Requires:
 
 Optional:
 - [Mod Settings](https://github.com/jackhumbert/mod_settings) - adds an in-game options page (see below). Without it the defaults apply.
+- [Codeware](https://github.com/psiberx/cp2077-codeware) - lets the on-screen messages be translated (see Translating). Without it they are in English.
 
 ### Garage add-on
 
@@ -74,6 +75,15 @@ With Mod Settings installed, under **Vehicle Smart Targeting**:
 | Troubleshooting | Debug logging | Off |
 
 *Jammer effect* scales how much enemies with smart-weapon jammers throw off the guns; 100 is the same penalty on-foot smart weapons take. Debug logging writes per-shot details to the Cyber Engine Tweaks game log.
+
+## Translating
+
+The text the mod shows in game goes through Codeware's localization system, so it can be translated without touching the rest of the code.
+
+- Core: `r6/scripts/VehicleSmartTargeting/VehicleSmartTargetingLocalization.reds`
+- Garage add-on: `garage-addon/r6/scripts/VehicleSmartTargetingGarage/TargetingLocalization.reds`
+
+Each file starts with instructions: copy the English class, translate the second string on each line, and return the new class for your language. English is used for any language without a translation. The Mod Settings page is in English only. Translations are welcome as pull requests.
 
 ## Notes
 

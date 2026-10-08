@@ -414,7 +414,7 @@ public func VST_SelectGimbalAim(enabled: Bool) -> Void {
   let vehicle: wref<VehicleObject>;
   VehicleComponent.GetVehicle(this.GetGame(), this, vehicle);
   if !VSTInstallSystem.HasFeature(vehicle, enabled ? VSTFeature.GimbalAim : VSTFeature.SmartLock) {
-    this.VST_ShowMessage(enabled ? "GIMBAL AIM NOT INSTALLED" : "SMART LOCK NOT INSTALLED");
+    this.VST_ShowMessage(VST_Upper(VST_Text(enabled ? "VehicleSmartTargeting-GimbalAim-Missing" : "VehicleSmartTargeting-SmartLock-Missing")));
     return;
   }
   if Equals(this.m_vstGimbalAim, enabled) {
@@ -425,7 +425,7 @@ public func VST_SelectGimbalAim(enabled: Bool) -> Void {
   this.m_vstGunPresetActive = false;
   this.m_aimAssistListener.m_currentConfig = AimAssistSettingConfig.Count;
   this.UpdateAimAssist();
-  this.VST_ShowMessage(enabled ? "MOUNTED GUNS: GIMBAL AIM" : "MOUNTED GUNS: SMART LOCK");
+  this.VST_ShowMessage(VST_Upper(VST_Text(enabled ? "VehicleSmartTargeting-GimbalAim-Selected" : "VehicleSmartTargeting-SmartLock-Selected")));
   VSTUtils.Log(this, "mode: gimbalAim=" + BoolToString(enabled));
 }
 

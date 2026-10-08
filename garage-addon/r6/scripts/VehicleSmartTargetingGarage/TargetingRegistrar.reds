@@ -21,7 +21,7 @@ public class TargetingRegistrar extends ServiceModuleRegistrar {
     let cond = new TargetingVisibility();
     cond.requireOwned = true;
     desc.id = n"vst_targeting";
-    desc.label = "TARGETING";
+    desc.label = UTF8StrUpper(TargetingText("VehicleSmartTargetingGarage-Title"));
     // Between Quick (30) and Repair (40).
     desc.priority = 36;
     desc.visibilityConditions = cond;
